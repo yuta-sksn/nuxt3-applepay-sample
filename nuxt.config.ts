@@ -13,6 +13,12 @@ export default defineNuxtConfig({
       ],
     },
   },
+  runtimeConfig: {
+    public: {
+      applePayMerchantIdentifier: process.env.APPLE_PAY_MERCHANT_IDENTIFIER,
+      applePayDomainName: process.env.APPLE_PAY_DOMAIN_NAME,
+    },
+  },
   modules: [
     '@nuxtjs/robots'
   ],
