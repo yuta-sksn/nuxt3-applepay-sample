@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
         merchantIdentifier: body.merchantIdentifier,
         displayName: body.displayName,
         initiative: 'web',
-        domainName: body.domainName,
+        // domainName: body.domainName,
         initiativeContext: body.domainName,
       }));
 
