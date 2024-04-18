@@ -14,6 +14,7 @@ export default defineEventHandler(async (event) => {
     cert: clientCert,
     key: clientCert,
     rejectUnauthorized: false, // 証明書検証を行わない場合のみ必要です
+    secureProtocol: "TLSv1_2_method",
   };
 
   try {
