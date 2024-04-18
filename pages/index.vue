@@ -24,7 +24,7 @@ const handleOnTapCheckoutApplePay = () => {
   }
 
   // @ts-ignore
-  const session = new ApplePaySession(3, request)
+  const session = new ApplePaySession(15, request)
 
   // Apple Pay のセッションが開始されたら実行
   session.onvalidatemerchant = (
@@ -67,42 +67,50 @@ const handleOnTapCheckoutApplePay = () => {
     /* base64エンコードしたトークンをfincodeの決済実行APIのtokenに設定する */
     const encodedToken = btoa(JSON.stringify(token))
     console.log(encodedToken)
+
+    session.completePayment(ApplePaySession.STATUS_SUCCESS)
   }
 
-  session.onpaymentmethodselected = event => {
+  session.onpaymentmethodselected = (
+    // @ts-ignore
+    event
+  ) => {
     console.log('onpaymentmethodselected')
+    const myPaymentMethod = event.paymentMethod
+    console.log(myPaymentMethod)
     session.completePaymentMethodSelection({
       newTotal: {
         label: '商品名',    // 請求項目のラベル
         amount: '10',       // 金額
         type: 'final'       // この金額が最終的なものであるかどうか（'final' または 'pending'）
-      }
+      },
+      newLineItems: [],
     });
   };
 
-session.onshippingmethodselected = event => {
-  console.log('onshippingmethodselected+1')
-  // No updates or errors are needed, pass an empty object.
-  var status = ApplePaySession.STATUS_SUCCESS;
-  session.completeShippingMethodSelection(ApplePaySession.STATUS_SUCCESS, {
-    "label": "After Trial Period",
-    "amount": "50.00",
-    "type": "final",
-    "paymentTiming": "deferred",
-    "deferredPaymentDate": new Date("2023-07-01T00:00:00"),
-}, null);
+// session.onshippingmethodselected = event => {
+//   console.log('onshippingmethodselected+1')
+//   // No updates or errors are needed, pass an empty object.
+//   var status = ApplePaySession.STATUS_SUCCESS;
+//   session.completeShippingMethodSelection(ApplePaySession.STATUS_SUCCESS, {
+//     "label": "After Trial Period",
+//     "amount": "50.00",
+//     "type": "final",
+//     "paymentTiming": "deferred",
+//     "deferredPaymentDate": new Date("2023-07-01T00:00:00"),
+// }, null);
 
-};
-session.onshippingcontactselected = event => {
-  console.log('onshippingcontactselected')
-  const update = {
-    newTotal: {
-      label: '商品名',
-      amount: '10',
-    },
-  };
-  session.completeShippingContactSelection(update);
-};
+// };
+// session.onshippingcontactselected = event => {
+//   console.log('onshippingcontactselected')
+//   const update = {
+//     newTotal: {
+//       label: '商品名',
+//       amount: '10',
+//     },
+//   };
+//   session.completeShippingContactSelection(update);
+// };
 
 
   session.oncancel = (
