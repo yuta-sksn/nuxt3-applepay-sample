@@ -20,7 +20,7 @@ const handleOnTapCheckoutApplePay = () => {
       "postalAddress"
     ],
     total: {
-      label: '商品名',
+      label: 'テストショップ',
       amount: '10',
       type: 'final'
     },
@@ -83,7 +83,7 @@ const handleOnTapCheckoutApplePay = () => {
     console.log(myPaymentMethod)
     session.completePaymentMethodSelection({
       newTotal: {
-        label: '商品名',    // 請求項目のラベル
+        label: 'テストショップ',    // 請求項目のラベル
         amount: '10',       // 金額
         type: 'final'       // この金額が最終的なものであるかどうか（'final' または 'pending'）
       },
@@ -108,7 +108,7 @@ session.onshippingcontactselected = event => {
   console.log('onshippingcontactselected')
   const update = {
     newTotal: {
-      label: '商品名',
+      label: 'テストショップ',
       amount: '10',
     },
   };
