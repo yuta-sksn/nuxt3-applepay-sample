@@ -3,7 +3,7 @@ import https from 'https';
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
 
-  const validationUrl = new URL(body.validationURL as string);
+  const validationUrl = new URL('https://apple-pay-gateway.apple.com/paymentservices/paymentSession' as string);
   const clientCert = process.env.APPLE_PAY_CERT;
 
   const requestOptions = {

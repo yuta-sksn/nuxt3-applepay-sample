@@ -16,9 +16,7 @@ const handleOnTapCheckoutApplePay = () => {
     /* 利用可能なカードブランドの種類 */
     supportedNetworks: ['visa', 'masterCard', 'jcb', 'amex'],
     merchantCapabilities: ['supports3DS', 'supportsCredit'],
-    requiredBillingContactFields: [
-      "postalAddress"
-    ],
+    requiredBillingContactFields: ['postalAddress'],
     total: {
       label: 'テストショップ',
       amount: '10',
@@ -90,31 +88,6 @@ const handleOnTapCheckoutApplePay = () => {
       newLineItems: [],
     });
   };
-
-session.onshippingmethodselected = event => {
-  console.log('onshippingmethodselected+1')
-  // No updates or errors are needed, pass an empty object.
-  var status = ApplePaySession.STATUS_SUCCESS;
-  session.completeShippingMethodSelection(ApplePaySession.STATUS_SUCCESS, {
-    "label": "After Trial Period",
-    "amount": "50.00",
-    "type": "final",
-    "paymentTiming": "deferred",
-    "deferredPaymentDate": new Date("2023-07-01T00:00:00"),
-}, null);
-
-};
-session.onshippingcontactselected = event => {
-  console.log('onshippingcontactselected')
-  const update = {
-    newTotal: {
-      label: 'テストショップ',
-      amount: '10',
-    },
-  };
-  session.completeShippingContactSelection(update);
-};
-
 
   session.oncancel = (
     // @ts-ignore
