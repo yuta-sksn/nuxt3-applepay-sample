@@ -19,6 +19,7 @@ const handleOnTapCheckoutApplePay = () => {
     total: {
       label: '商品名',
       amount: '10',
+      type: 'final'
     },
   }
 
@@ -47,9 +48,9 @@ const handleOnTapCheckoutApplePay = () => {
           domainName,
           displayName,
         },
-      }).then((merchantSession) => {
+      }).then(async (merchantSession) => {
         console.log('Merchant Session:', merchantSession)
-        session.completeMerchantValidation(merchantSession)
+        await session.completeMerchantValidation(merchantSession)
         console.log('called')
       })
     } catch (error) {
@@ -69,19 +70,38 @@ const handleOnTapCheckoutApplePay = () => {
   }
 
   session.onpaymentmethodselected = event => {
-  // No updates or errors are needed, pass an empty object.
-  // const update = {};
-  // session.completePaymentMethodSelection(update);
-};
+    console.log('onpaymentmethodselected')
+    session.completePaymentMethodSelection({
+      newTotal: {
+        label: '商品名',    // 請求項目のラベル
+        amount: '10',       // 金額
+        type: 'final'       // この金額が最終的なものであるかどうか（'final' または 'pending'）
+      }
+    });
+  };
 
 session.onshippingmethodselected = event => {
+  console.log('onshippingmethodselected+1')
   // No updates or errors are needed, pass an empty object.
-  // const update = {};
-  // session.completeShippingMethodSelection(update);
+  var status = ApplePaySession.STATUS_SUCCESS;
+  session.completeShippingMethodSelection(ApplePaySession.STATUS_SUCCESS, {
+    "label": "After Trial Period",
+    "amount": "50.00",
+    "type": "final",
+    "paymentTiming": "deferred",
+    "deferredPaymentDate": new Date("2023-07-01T00:00:00"),
+}, null);
+
 };
 session.onshippingcontactselected = event => {
-  // const update = {};
-  // session.completeShippingContactSelection(update);
+  console.log('onshippingcontactselected')
+  const update = {
+    newTotal: {
+      label: '商品名',
+      amount: '10',
+    },
+  };
+  session.completeShippingContactSelection(update);
 };
 
 
