@@ -1,34 +1,52 @@
+import https from 'https';
+
 export default defineEventHandler(async (event) => {
-  console.log(await readBody(event))
-  const body = await readBody(event)
+  const body = await readBody(event);
 
-  const validationUrl = body.validationURL as string
+  const validationUrl = new URL(body.validationURL as string);
+  const clientCert = process.env.APPLE_PAY_CERT;
 
-  const requestBody = {
-    merchantIdentifier: body.merchantIdentifier,
-    domainName: body.domainName,
-    displayName: body.displayName,
-  }
-
-  console.log(`Post to ${validationUrl}`)
+  const requestOptions = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    cert: clientCert,
+    key: clientCert,
+    rejectUnauthorized: false, // 証明書検証を行わない場合のみ必要です
+  };
 
   try {
-    const response = await $fetch(validationUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: requestBody,
-    })
+    const response = await new Promise((resolve, reject) => {
+      const req = https.request(validationUrl.href, requestOptions, (res) => {
+        let data = '';
 
-    console.log(response)
+        res.on('data', (chunk) => {
+          data += chunk;
+        });
 
-    return response
+        res.on('end', () => {
+          const responseData = JSON.parse(data);
+          resolve(responseData); // レスポンスデータを解決して返す
+        });
+      });
+
+      req.on('error', (error) => {
+        reject(error); // エラーが発生した場合はエラーを拒否して返す
+      });
+
+      req.write(JSON.stringify({
+        merchantIdentifier: body.merchantIdentifier,
+        domainName: body.domainName,
+        displayName: body.displayName,
+      }));
+
+      req.end();
+    });
+
+    return response; // クライアントに返すデータを返す
   } catch (error) {
-    console.error('Error validating merchant:', error)
-    return createError({
-      statusCode: 500,
-      statusMessage: 'Server error during merchant validation',
-    })
+    console.error('Error:', error);
+    throw new Error('Internal Server Error'); // エラーが発生した場合は内部サーバーエラーをスローして返す
   }
-})
+});
