@@ -23,14 +23,13 @@ const handleOnTapCheckoutApplePay = () => {
   }
 
   // @ts-ignore
-  const session = new ApplePaySession(15, request)
+  const session = new ApplePaySession(3, request)
 
   // Apple Pay のセッションが開始されたら実行
   session.onvalidatemerchant = async (
     // @ts-ignore
     event
   ) => {
-    console.log('Call session on validate merchant.')
     try {
       const validationURL = event.validationURL // Apple Pay から提供される URL
       console.log('Validation URL')
@@ -100,7 +99,7 @@ onMounted(async () => {
       runtimeConfig.public.applePayMerchantIdentifier
     )) as boolean
 
-    // result = true
+    result = true
 
     // Apple Pay が利用できる場合
     if (result) {
