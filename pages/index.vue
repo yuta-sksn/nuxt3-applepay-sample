@@ -13,19 +13,17 @@ const handleOnTapCheckoutApplePay = () => {
   const request = {
     countryCode: 'JP',
     currencyCode: 'JPY',
-    /* 利用可能なカードブランドの種類 */
     supportedNetworks: ['visa', 'masterCard', 'jcb', 'amex'],
-    merchantCapabilities: ['supports3DS', 'supportsCredit'],
+    merchantCapabilities: ['supports3DS'],
     requiredBillingContactFields: ['postalAddress'],
     total: {
-      label: 'テストショップ',
-      amount: '10',
-      type: 'final'
+      label: 'My Store',
+      amount: 10,
     },
   }
 
   // @ts-ignore
-  const session = new ApplePaySession(3, request)
+  const session = new ApplePaySession(10, request)
 
   // Apple Pay のセッションが開始されたら実行
   session.onvalidatemerchant = (
@@ -33,12 +31,10 @@ const handleOnTapCheckoutApplePay = () => {
     event
   ) => {
     try {
-      const validationURL = event.validationURL // Apple Pay から提供される URL
-      console.log('Validation URL')
-      console.log(validationURL)
+      const validationURL = event.validationURL
       const merchantIdentifier = runtimeConfig.public.applePayMerchantIdentifier
       const domainName = runtimeConfig.public.applePayDomainName
-      const displayName = 'テストショップ'
+      const displayName = 'My Store'
 
       console.log('Validate Merchant')
       $fetch('/api/validateMerchant', {
@@ -49,9 +45,9 @@ const handleOnTapCheckoutApplePay = () => {
           domainName,
           displayName,
         },
-      }).then(async (merchantSession) => {
+      }).then((merchantSession) => {
         console.log('Merchant Session:', merchantSession)
-        await session.completeMerchantValidation(merchantSession)
+        session.completeMerchantValidation(merchantSession)
         console.log('called')
       })
     } catch (error) {
@@ -59,35 +55,34 @@ const handleOnTapCheckoutApplePay = () => {
     }
   }
 
-  session.onpaymentauthorized = (
-    // @ts-ignore
-    event
-  ) => {
-    const token = event.payment.token
-
-    /* base64エンコードしたトークンをfincodeの決済実行APIのtokenに設定する */
-    const encodedToken = btoa(JSON.stringify(token))
-    console.log(encodedToken)
-
-    session.completePayment(ApplePaySession.STATUS_SUCCESS)
-  }
-
   session.onpaymentmethodselected = (
     // @ts-ignore
     event
   ) => {
     console.log('onpaymentmethodselected')
+  
     const myPaymentMethod = event.paymentMethod
     console.log(myPaymentMethod)
+
     session.completePaymentMethodSelection({
       newTotal: {
-        label: 'テストショップ',    // 請求項目のラベル
-        amount: '10',       // 金額
-        type: 'final'       // この金額が最終的なものであるかどうか（'final' または 'pending'）
+        label: 'My Store',
+        amount: 10,
+        type: 'final',
       },
       newLineItems: [],
-    });
-  };
+    })
+  }
+
+  session.onpaymentauthorized = (
+    // @ts-ignore
+    event
+  ) => {
+    const token = event.payment.token
+    const encodedToken = btoa(JSON.stringify(token))
+    console.log(encodedToken)
+    session.completePayment(ApplePaySession.STATUS_SUCCESS)
+  }
 
   session.oncancel = (
     // @ts-ignore
@@ -96,17 +91,7 @@ const handleOnTapCheckoutApplePay = () => {
     console.log(event)
   }
 
-  // Apple Pay 決済でエラーが発生した場合
-  // session.onerror = (
-  //   // @ts-ignore
-  //   event
-  // ) => {
-  //   console.error('Apple Pay session error:', event.error.message)
-  // }
-
-  console.log('before session begin')
   session.begin()
-  console.log('before session after')
 }
 
 onMounted(async () => {
@@ -114,13 +99,11 @@ onMounted(async () => {
   if (window.ApplePaySession) {
     // FYI: https://developer.apple.com/documentation/apple_pay_on_the_web/applepaysession/1778000-canmakepaymentswithactivecard
     // @ts-ignore
-    let result = (await ApplePaySession.canMakePaymentsWithActiveCard(
+    const result = (await ApplePaySession.canMakePaymentsWithActiveCard(
       runtimeConfig.public.applePayMerchantIdentifier
     )) as boolean
 
-    result = true
-
-    // Apple Pay が利用できる場合
+    // When Apple Pay is available.
     if (result) {
       isDisplayApplePay.value = true
     }
