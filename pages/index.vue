@@ -26,7 +26,7 @@ const handleOnTapCheckoutApplePay = () => {
   const session = new ApplePaySession(3, request)
 
   // Apple Pay のセッションが開始されたら実行
-  session.onvalidatemerchant = async (
+  session.onvalidatemerchant = (
     // @ts-ignore
     event
   ) => {
@@ -39,7 +39,7 @@ const handleOnTapCheckoutApplePay = () => {
       const displayName = 'テストショップ'
 
       console.log('Validate Merchant')
-      const merchantSession = await $fetch('/api/validateMerchant', {
+      $fetch('/api/validateMerchant', {
         method: 'POST',
         body: {
           validationURL,
@@ -47,11 +47,11 @@ const handleOnTapCheckoutApplePay = () => {
           domainName,
           displayName,
         },
+      }).then((merchantSession) => {
+        console.log('Merchant Session:', merchantSession)
+        session.completeMerchantValidation(merchantSession)
+        console.log('called')
       })
-
-      console.log('Merchant Session:', merchantSession)
-      session.completeMerchantValidation(merchantSession)
-      console.log('called')
     } catch (error) {
       console.error('Error fetching merchant session:', error)
     }

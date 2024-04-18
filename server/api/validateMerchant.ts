@@ -47,9 +47,9 @@ export default defineEventHandler(async (event) => {
     });
 
     // @ts-ignore
-    response.epochTimestamp = Number(String(response.epochTimestamp).slice(0, -3))
+    // response.epochTimestamp = Number(String(response.epochTimestamp).slice(0, -3))
     // @ts-ignore
-    response.expiresAt = Number(String(response.expiresAt).slice(0, -3))
+    // response.expiresAt = Number(String(response.expiresAt).slice(0, -3))
 
     console.log(response)
 
