@@ -61,14 +61,29 @@ const handleOnTapCheckoutApplePay = () => {
     // @ts-ignore
     event
   ) => {
-    // console.log('called')
     const token = event.payment.token
-    // console.log(token)
 
     /* base64エンコードしたトークンをfincodeの決済実行APIのtokenに設定する */
     const encodedToken = btoa(JSON.stringify(token))
     console.log(encodedToken)
   }
+
+  session.onpaymentmethodselected = event => {
+  // No updates or errors are needed, pass an empty object.
+  // const update = {};
+  // session.completePaymentMethodSelection(update);
+};
+
+session.onshippingmethodselected = event => {
+  // No updates or errors are needed, pass an empty object.
+  // const update = {};
+  // session.completeShippingMethodSelection(update);
+};
+session.onshippingcontactselected = event => {
+  // const update = {};
+  // session.completeShippingContactSelection(update);
+};
+
 
   session.oncancel = (
     // @ts-ignore
@@ -78,12 +93,12 @@ const handleOnTapCheckoutApplePay = () => {
   }
 
   // Apple Pay 決済でエラーが発生した場合
-  session.onerror = (
-    // @ts-ignore
-    event
-  ) => {
-    console.error('Apple Pay session error:', event.error.message)
-  }
+  // session.onerror = (
+  //   // @ts-ignore
+  //   event
+  // ) => {
+  //   console.error('Apple Pay session error:', event.error.message)
+  // }
 
   console.log('before session begin')
   session.begin()
