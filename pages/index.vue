@@ -15,7 +15,10 @@ const handleOnTapCheckoutApplePay = () => {
     currencyCode: 'JPY',
     /* 利用可能なカードブランドの種類 */
     supportedNetworks: ['visa', 'masterCard', 'jcb', 'amex'],
-    merchantCapabilities: ['supports3DS'],
+    merchantCapabilities: ['supports3DS', 'supportsCredit'],
+    requiredBillingContactFields: [
+      "postalAddress"
+    ],
     total: {
       label: '商品名',
       amount: '10',
@@ -24,7 +27,7 @@ const handleOnTapCheckoutApplePay = () => {
   }
 
   // @ts-ignore
-  const session = new ApplePaySession(15, request)
+  const session = new ApplePaySession(3, request)
 
   // Apple Pay のセッションが開始されたら実行
   session.onvalidatemerchant = (
@@ -88,29 +91,29 @@ const handleOnTapCheckoutApplePay = () => {
     });
   };
 
-// session.onshippingmethodselected = event => {
-//   console.log('onshippingmethodselected+1')
-//   // No updates or errors are needed, pass an empty object.
-//   var status = ApplePaySession.STATUS_SUCCESS;
-//   session.completeShippingMethodSelection(ApplePaySession.STATUS_SUCCESS, {
-//     "label": "After Trial Period",
-//     "amount": "50.00",
-//     "type": "final",
-//     "paymentTiming": "deferred",
-//     "deferredPaymentDate": new Date("2023-07-01T00:00:00"),
-// }, null);
+session.onshippingmethodselected = event => {
+  console.log('onshippingmethodselected+1')
+  // No updates or errors are needed, pass an empty object.
+  var status = ApplePaySession.STATUS_SUCCESS;
+  session.completeShippingMethodSelection(ApplePaySession.STATUS_SUCCESS, {
+    "label": "After Trial Period",
+    "amount": "50.00",
+    "type": "final",
+    "paymentTiming": "deferred",
+    "deferredPaymentDate": new Date("2023-07-01T00:00:00"),
+}, null);
 
-// };
-// session.onshippingcontactselected = event => {
-//   console.log('onshippingcontactselected')
-//   const update = {
-//     newTotal: {
-//       label: '商品名',
-//       amount: '10',
-//     },
-//   };
-//   session.completeShippingContactSelection(update);
-// };
+};
+session.onshippingcontactselected = event => {
+  console.log('onshippingcontactselected')
+  const update = {
+    newTotal: {
+      label: '商品名',
+      amount: '10',
+    },
+  };
+  session.completeShippingContactSelection(update);
+};
 
 
   session.oncancel = (
