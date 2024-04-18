@@ -37,12 +37,15 @@ export default defineEventHandler(async (event) => {
 
       req.write(JSON.stringify({
         merchantIdentifier: body.merchantIdentifier,
-        domainName: body.domainName,
         displayName: body.displayName,
+        initiative: 'web',
+        initiativeContext: body.domainName,
       }));
 
       req.end();
     });
+
+    console.log(response)
 
     return response; // クライアントに返すデータを返す
   } catch (error) {

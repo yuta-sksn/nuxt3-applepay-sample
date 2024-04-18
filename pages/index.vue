@@ -23,7 +23,7 @@ const handleOnTapCheckoutApplePay = () => {
   }
 
   // @ts-ignore
-  const session = new ApplePaySession(3, request)
+  const session = new ApplePaySession(15, request)
 
   // Apple Pay のセッションが開始されたら実行
   session.onvalidatemerchant = async (
@@ -52,6 +52,7 @@ const handleOnTapCheckoutApplePay = () => {
 
       console.log('Merchant Session:', merchantSession)
       session.completeMerchantValidation(merchantSession)
+      console.log('called')
     } catch (error) {
       console.error('Error fetching merchant session:', error)
     }
@@ -61,8 +62,9 @@ const handleOnTapCheckoutApplePay = () => {
     // @ts-ignore
     event
   ) => {
+    // console.log('called')
     const token = event.payment.token
-    console.log(token)
+    // console.log(token)
 
     /* base64エンコードしたトークンをfincodeの決済実行APIのtokenに設定する */
     const encodedToken = btoa(JSON.stringify(token))
@@ -97,6 +99,8 @@ onMounted(async () => {
     let result = (await ApplePaySession.canMakePaymentsWithActiveCard(
       runtimeConfig.public.applePayMerchantIdentifier
     )) as boolean
+
+    // result = true
 
     // Apple Pay が利用できる場合
     if (result) {
