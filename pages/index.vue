@@ -47,21 +47,15 @@ const payments = () => {
       isLiveMode: false,
     })
 
-    fincde.payments({
-      // @ts-ignore
-      // pay_type: 'Applepay',
-      // access_id: cart.value?.payload?.accessId as string,
-      // id: cart.value?.payload?.id as string,
-      // token: encodedTokenByApple.value,
-      // method: '1',
-      pay_type: 'Applepay',
-      access_id: result.access_id,
-      id: result.id,
-      // @ts-ignore
-      customer_id: null,
-      token: encodedTokenByApple.value,
-      // token: 'eyJoZWFkZXIiOnsiZXBoZW1lcmFsUHVibGljS2V5IjoidGVzdFB1YmxpY0tleSIsInB1YmxpY0tleUhhc2giOiJ0ZXN0S2V5SGFzaCIsInRyYW5zYWN0aW9uSWQiOiJ0ZXN0VHJhbnNhY3Rpb24ifSwiZGF0YSI6ImV5SmhjSEJzYVdOaGRHbHZibEJ5YVcxaGNubEJZMk52ZFc1MFRuVnRZbVZ5SWpvaU5ERXhNVEV4TVRFeE1URXhNVEV4TVNJc0ltRndjR3hwWTJGMGFXOXVSWGh3YVhKaGRHbHZia1JoZEdVaU9pSXlOakV5TXpFaUxDSmpkWEp5Wlc1amVVTnZaR1VpT2lJek9USWlMQ0owY21GdWMyRmpkR2x2YmtGdGIzVnVkQ0k2SWpFeE1URWlMQ0pqWVhKa2FHOXNaR1Z5VG1GdFpTSTZJaUlzSW1SbGRtbGpaVTFoYm5WbVlXTjBkWEpsY2tsa1pXNTBhV1pwWlhJaU9pSWlMQ0p3WVhsdFpXNTBSR0YwWVZSNWNHVWlPaUl6UkZObFkzVnlaU0lzSW5CaGVXMWxiblJFWVhSaElqcDdJbTl1YkdsdVpWQmhlVzFsYm5SRGNubHdkRzluY21GdElqb2lSSFZ0YlhsRFFWWldRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRU0lzSW1WamFVbHVaR2xqWVhSdmNpSTZJalVpZlgwPSIsInNpZ25hdHVyZSI6InRlc3RTaWduYXR1cmUiLCJ2ZXJzaW9uIjoiTW9jayJ9',
-    },
+    fincde.payments(
+      {
+        // @ts-ignore
+        pay_type: 'Applepay',
+        access_id: result.access_id,
+        id: result.id,
+        token: encodedTokenByApple.value,
+        method: '1',
+      },
       handleOnCallbackPayments,
       handleOnCallbackPaymentsError
     )
@@ -82,7 +76,7 @@ const handleOnTapCheckoutApplePay = () => {
   }
 
   // @ts-ignore
-  applePaySession.value = new ApplePaySession(10, request)
+  applePaySession.value = new ApplePaySession(15, request)
 
   // Apple Pay のセッションが開始されたら実行
   applePaySession.value.onvalidatemerchant = (
