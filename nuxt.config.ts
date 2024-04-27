@@ -15,6 +15,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
+      fincodePublicKey: process.env.FINCODE_PUBLIC_KEY,
       applePayMerchantIdentifier: process.env.APPLE_PAY_MERCHANT_IDENTIFIER,
       applePayDomainName: process.env.APPLE_PAY_DOMAIN_NAME,
     },

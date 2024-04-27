@@ -5,21 +5,66 @@
 </template>
 
 <script setup lang="ts">
+import { initFincode, type PaymentObject } from '@fincode/js'
+
 const runtimeConfig = useRuntimeConfig()
 
 const isDisplayApplePay = ref<boolean>(false)
 const applePaySession = ref<any | null>(null)
 const encodedTokenByApple = ref<string>('')
 
-const payments = () => {
-  $fetch('/api/createCart', {
-    method: 'POST',
-  }).then((result) => {
-    console.log(result)
-  })
+const handleOnCallbackPayments = (status: number, res: PaymentObject) => {
+  if (!applePaySession.value) return
+
+  if (status !== 200) {
+    console.error('FAILURE')
+
+    // ApplePaySession を failure で終了
+    // @ts-ignore
+    return applePaySession.value.completePayment(ApplePaySession.STATUS_FAILURE)
+  }
+
+  // @ts-ignore
+  const acsUrl = res.acs_url
 
   // @ts-ignore
   applePaySession.value.completePayment(ApplePaySession.STATUS_SUCCESS)
+}
+
+const handleOnCallbackPaymentsError = () => {
+  console.log('Error by payments')
+}
+
+const payments = () => {
+  $fetch('/api/createCart', {
+    method: 'POST',
+  }).then(async (result) => {
+    if (!result) return
+    console.log(result)
+
+    const fincde = await initFincode({
+      publicKey: runtimeConfig.public.fincodePublicKey as string,
+      isLiveMode: false,
+    })
+
+    fincde.payments({
+      // @ts-ignore
+      // pay_type: 'Applepay',
+      // access_id: cart.value?.payload?.accessId as string,
+      // id: cart.value?.payload?.id as string,
+      // token: encodedTokenByApple.value,
+      // method: '1',
+      pay_type: 'Applepay',
+      access_id: result.access_id,
+      id: result.id,
+      // @ts-ignore
+      customer_id: null,
+      token: encodedTokenByApple.value,
+    },
+      handleOnCallbackPayments,
+      handleOnCallbackPaymentsError
+    )
+  })
 }
 
 const handleOnTapCheckoutApplePay = () => {
