@@ -10,6 +10,8 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@fincode/js": "^1.0.0",
+    "@fincode/node": "^1.0.1",
     "@nuxtjs/robots": "^3.0.0",
     "nuxt": "^3.11.2",
     "vue": "^3.4.21",

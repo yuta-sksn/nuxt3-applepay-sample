@@ -8,6 +8,19 @@
 const runtimeConfig = useRuntimeConfig()
 
 const isDisplayApplePay = ref<boolean>(false)
+const applePaySession = ref<any | null>(null)
+const encodedTokenByApple = ref<string>('')
+
+const payments = () => {
+  $fetch('/api/createCard', {
+    method: 'POST',
+  }).then((result) => {
+    console.log(result)
+  })
+
+  // @ts-ignore
+  applePaySession.value.completePayment(ApplePaySession.STATUS_SUCCESS)
+}
 
 const handleOnTapCheckoutApplePay = () => {
   const request = {
@@ -23,10 +36,10 @@ const handleOnTapCheckoutApplePay = () => {
   }
 
   // @ts-ignore
-  const session = new ApplePaySession(10, request)
+  applePaySession.value = new ApplePaySession(10, request)
 
   // Apple Pay のセッションが開始されたら実行
-  session.onvalidatemerchant = (
+  applePaySession.value.onvalidatemerchant = (
     // @ts-ignore
     event
   ) => {
@@ -47,7 +60,7 @@ const handleOnTapCheckoutApplePay = () => {
         },
       }).then((merchantSession) => {
         console.log('Merchant Session:', merchantSession)
-        session.completeMerchantValidation(merchantSession)
+        applePaySession.value.completeMerchantValidation(merchantSession)
         console.log('called')
       })
     } catch (error) {
@@ -55,7 +68,7 @@ const handleOnTapCheckoutApplePay = () => {
     }
   }
 
-  session.onpaymentmethodselected = (
+  applePaySession.value.onpaymentmethodselected = (
     // @ts-ignore
     event
   ) => {
@@ -64,7 +77,7 @@ const handleOnTapCheckoutApplePay = () => {
     const myPaymentMethod = event.paymentMethod
     console.log(myPaymentMethod)
 
-    session.completePaymentMethodSelection({
+    applePaySession.value.completePaymentMethodSelection({
       newTotal: {
         label: 'My Store',
         amount: 10,
@@ -74,24 +87,25 @@ const handleOnTapCheckoutApplePay = () => {
     })
   }
 
-  session.onpaymentauthorized = (
+  applePaySession.value.onpaymentauthorized = (
     // @ts-ignore
     event
   ) => {
     const token = event.payment.token
-    const encodedToken = btoa(JSON.stringify(token))
-    console.log(encodedToken)
-    session.completePayment(ApplePaySession.STATUS_SUCCESS)
+    encodedTokenByApple.value = btoa(JSON.stringify(token))
+    console.log(encodedTokenByApple.value)
+
+    payments()
   }
 
-  session.oncancel = (
+  applePaySession.value.oncancel = (
     // @ts-ignore
     event
   ) => {
     console.log(event)
   }
 
-  session.begin()
+  applePaySession.value.begin()
 }
 
 onMounted(async () => {
