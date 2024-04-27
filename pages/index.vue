@@ -12,7 +12,7 @@ const applePaySession = ref<any | null>(null)
 const encodedTokenByApple = ref<string>('')
 
 const payments = () => {
-  $fetch('/api/createCard', {
+  $fetch('/api/createCart', {
     method: 'POST',
   }).then((result) => {
     console.log(result)
