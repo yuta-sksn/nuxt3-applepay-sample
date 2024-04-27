@@ -138,6 +138,8 @@ const handleOnTapCheckoutApplePay = () => {
     event
   ) => {
     const token = event.payment.token
+    console.log('Apple Pay Token:', token)
+    console.log('Apple Pay Token JSON String:', JSON.stringify(token))
     encodedTokenByApple.value = btoa(JSON.stringify(token))
     console.log(encodedTokenByApple.value)
 
